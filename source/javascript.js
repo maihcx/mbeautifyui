@@ -1,6 +1,8 @@
+// a product of maihcx @maiphp
 ! function(_plugin, e) {
     "object" == typeof exports && "undefined" != typeof module ? e(exports) : "function" == typeof define && define.amd ? define(["exports"], e) : e((_plugin = "undefined" != typeof globalThis ? globalThis : _plugin || self).window = _plugin.window || {})
-}(this, (function(_plugin) {
+}
+(this, (function(_plugin) {
     "use strict";
 
     function MBeautifyUI(option){
@@ -494,7 +496,19 @@
             context_menu: [],
             context_menu_initialize: [],
             form_information: {},
-            tooltip_initialize: null,
+            tooltip_storage: {is_intitialize: false, is_show: false, current_callback: null, current_element: null, callback_stored: {}, 
+                setCallback: function(classet, callback) {
+                    $this.FORM_DATA.tooltip_storage.callback_stored[classet] = callback;
+                    $this.FORM_DATA.tooltip_storage.is_intitialize = true;
+                }, getCallback: function(classet = null) {
+                    if ($this.Controller.isNullOrEmpty(classet)) {
+                        return this.callback_stored;
+                    }
+                    else {
+                        return this.callback_stored[classet];
+                    }
+                }
+            },
             event_controlers: [],
             messages_data: [],
             is_menu_touch: false,
@@ -555,28 +569,24 @@
             if (m_is_mobile){
                 return false;
             }
-            let flag_bind = false;
-            if (!$this.FORM_DATA.tooltip_initialize){
-                $this.FORM_DATA.tooltip_initialize = {};
-                flag_bind = true;
-            }
+            let tooltip_storage = $this.FORM_DATA.tooltip_storage;
+            let flag_bind = tooltip_storage.is_intitialize;
 
-            $this.FORM_DATA.tooltip_initialize[apply_class] = callback;
-            if (flag_bind){
-                var fix_conflick = false, _callback = null;
-                var elementInsert = null, tooltip_time = null, e_event = null, e_event_callback = {innerItem: null, is_ShowTooltip: false};
+            tooltip_storage.setCallback(apply_class, callback);
+            if (!flag_bind){
+                let tooltip_time = null, e_event = null, e_event_callback = {innerItem: null, is_ShowTooltip: false};
                 const TOOLTIP_PANEL = document.getElementsByClassName('tooltip-layout')[0],
                 moveRF = function(e){
                     if (e != null){
                         const tooltip_layout = document.getElementsByClassName('tooltip-layout')[0];
                         
                         if (TOOLTIP_PANEL.classList.contains('m-no-display')) {
-                            protect_CLOSE_TOOLTIP();
+                            fnc_closeTooltip();
                         }
                         
                         tooltip_layout.classList.remove('m-no-display');
 
-                        var pageX = e.clientX,
+                        let pageX = e.clientX,
                             pageY = e.clientY;
                         if (pageX == undefined){
                             pageX = e.detail.clientX;
@@ -589,7 +599,7 @@
                         }
                         else if ((tooltip_layout.offsetHeight + (pageY + 20)) > window.innerHeight){
                             tooltip_layout.style.left = (pageX + 10) + 'px';
-                            tooltip_layout.style.top = (e.pageY - tooltip_layout.offsetHeight - 4) + 'px';
+                            tooltip_layout.style.top = (pageY - tooltip_layout.offsetHeight - 4) + 'px';
                         }
                         else{
                             tooltip_layout.style.left = (pageX + 10) + 'px';
@@ -612,51 +622,58 @@
                     }
                 }, my_load_event = function(e){
                     e_event = e;
-                }, fnc_tooltipStart = function(event, itemShowTooltip) {
-                    if (elementInsert != itemShowTooltip){
-                        elementInsert = itemShowTooltip;
+                }, fnc_tooltipStart = function(bind_key_run, itemShowTooltip) {
+                    if (tooltip_storage.current_element != itemShowTooltip && !tooltip_storage.is_show){
+                        tooltip_storage.current_callback = tooltip_storage.getCallback(bind_key_run);
+                        tooltip_storage.current_element = itemShowTooltip;
+                        tooltip_storage.is_show = true;
                         $this.Controller.bindEvents(document, {mousemove: my_load_event});
                         tooltip_time = setTimeout(function(){
                             e_event_callback.is_ShowTooltip = true;
-                            e_event_callback.innerItem = elementInsert;
-                            var tooltip_content = elementInsert.dataset.title;
+                            e_event_callback.innerItem = tooltip_storage.current_element;
+                            let tooltip_content = tooltip_storage.current_element.dataset.title;
                             if ($this.Controller.isNullOrEmpty(tooltip_content)){
-                                tooltip_content = elementInsert.getElementsByClassName("tooltip-content")[0].innerHTML;
+                                tooltip_content = tooltip_storage.current_element.getElementsByClassName("tooltip-content")[0].innerHTML;
                             }
                             document.querySelector('.tooltip-layout .tooltip-layout-content').innerHTML = tooltip_content;
-                            $this.Controller.bindEvents(elementInsert, {mousemove: moveRF});
+                            $this.Controller.bindEvents(tooltip_storage.current_element, {mousemove: moveRF});
                             
                             moveRF(e_event);
                             $this.Controller.unbindEvents(document, {mousemove: my_load_event});
 
-                            if (_callback != null){
-                                _callback(e_event_callback);
+                            if (tooltip_storage.current_callback != null){
+                                tooltip_storage.current_callback(e_event_callback);
                             }
                         }, 300);
                     }
                 }, fnc_tooltipStop = function(event){
-                    if (tooltip_time != null){
-                        clearTimeout(tooltip_time);
-                        if (elementInsert != null){
-                            $this.Controller.unbindEvents(elementInsert, {mousemove: moveRF});
-                            e_event_callback.is_ShowTooltip = false;
-                            if (_callback != null){
-                                _callback(e_event_callback);
+                    if (tooltip_storage.is_show) {
+                        if (tooltip_time != null){
+                            clearTimeout(tooltip_time);
+                            if (tooltip_storage.current_element != null){
+                                $this.Controller.unbindEvents(tooltip_storage.current_element, {mousemove: moveRF});
+                                e_event_callback.is_ShowTooltip = false;
+                                if (tooltip_storage.current_callback != null){
+                                    tooltip_storage.current_callback(e_event_callback);
+                                }
+                                e_event_callback.innerItem = null;
+                                tooltip_storage.current_element = null;
                             }
-                            e_event_callback.innerItem = null;
-                            elementInsert = null;
                         }
+                        $this.Controller.unbindEvents(document, {mousemove: my_load_event});
+
+                        fnc_closeTooltip();
+
+                        $this.Controller.bindEvents(TOOLTIP_PANEL, {
+                            transitionend: fnc_closeTooltip}
+                        );
+    
+                        TOOLTIP_PANEL.classList.remove('view');
+                        tooltip_storage.is_show = false;
                     }
-                    $this.Controller.unbindEvents(document, {mousemove: my_load_event});
-
-                    $this.Controller.bindEvents(TOOLTIP_PANEL, {
-                        transitionend: protect_CLOSE_TOOLTIP}
-                    );
-
-                    TOOLTIP_PANEL.classList.remove('view');
-                }, protect_CLOSE_TOOLTIP = function () {
+                }, fnc_closeTooltip = function () {
                     $this.Controller.unbindEvents(TOOLTIP_PANEL, {
-                        transitionend: protect_CLOSE_TOOLTIP}
+                        transitionend: fnc_closeTooltip}
                     );
 
                     TOOLTIP_PANEL.classList.add('m-no-display');
@@ -664,12 +681,12 @@
 
                 $this.Controller.bindEvents(window, {mousemove: function(event) {
                     const EVENT_PATH = $this.Controller.getPathOfEvent(event);
-                    var flag_run = false,
+                    let flag_run = false,
                         item_start = null,
                         bind_key_run = null
                     ;
 
-                    Object.keys($this.FORM_DATA.tooltip_initialize).some(bind_key => {
+                    Object.keys(tooltip_storage.getCallback()).some(bind_key => {
                         EVENT_PATH.some(element_path => {
                             if (!$this.Controller.isNullOrEmpty(element_path.classList) && element_path.classList.contains(bind_key)){
                                 flag_run = true;
@@ -684,21 +701,13 @@
                     });
                     
                     if (flag_run){
-                        if (elementInsert != item_start){
-                            fix_conflick = false;
+                        if (tooltip_storage.current_element != item_start){
                             fnc_tooltipStop(event);
                         }
-                        if (!fix_conflick){
-                            fix_conflick = true;
-                            _callback = $this.FORM_DATA.tooltip_initialize[bind_key_run];
-                            fnc_tooltipStart(event, item_start);
-                        }
+                        fnc_tooltipStart(bind_key_run, item_start);
                     }
                     else{
-                        if (fix_conflick){
-                            fix_conflick = false;
-                            fnc_tooltipStop(event);
-                        }
+                        fnc_tooltipStop(event);
                     }
                 }});
             }

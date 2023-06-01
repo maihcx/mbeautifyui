@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <link rel="stylesheet" href="source/style.css">
+    <script src="source/javascript.js"></script>
+    <script src="javascript.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>My Beautify User Interface</title>
+</head>
+<body>
+    <div class="main-content">
+        <div class="left-content"></div>
+        <div class="center-content">
+            <div class="content-area center-frame">
+                <div class="header-text">My Beautify User Interface</div>
+                <div class="header-text-describe">Hỗ trợ thiết kế giao diện đẹp mắt hơn và các tuỳ chọn để thay thế jquery</div>
+            </div>
+            <div class="content-area">
+                <div class="text-describe">Khởi tạo</div>
+                <div class="text-describe-content text-code">
+                    <code>
+                        <pre>
+&lt;!-- Lưu ý: các sự kiện hoặc điều khiển của thư viện --&gt;
+&lt;!-- phải được viết trong window.onload --&gt;
+
+&lt;link rel="stylesheet" href="source/style.css"&gt;
+&lt;script src="source/javascript.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+    // Quá trình chính
+    var MBUI = null;
+    // Điều khiển
+    var Controller = null;
+    // Hợp thoại thông báo
+    var Message = null;
+    window.onload = function() {
+        MBUI = MBeautifyUI();
+        Controller = MBUI.Controller;
+        Message = MBUI.Message;
+    }
+&lt;\script&gt;
+</pre>
+                    </code>
+                </div>
+            </div>
+            <div class="content-area">
+                <div class="text-describe">Chế độ nền sáng - tối</div>
+                <div class="text-describe-content">
+                    <select name="dark_light_switch" id="dark_light_switch">
+                        <option value="0">Tự động</option>
+                        <option value="1">Sáng</option>
+                        <option value="2">Tối</option>
+                    </select>
+                </div>
+                <div class="text-describe-content text-code">
+                    <code>
+                        <pre>
+&lt;select name="dark_light_switch" id="dark_light_switch"&gt;
+    &lt;option value="0"&gt;Tự động&lt;/option&gt;
+    &lt;option value="1"&gt;Sáng&lt;/option&gt;
+    &lt;option value="2"&gt;Tối&lt;/option&gt;
+&lt;/select
+
+&lt;script&gt;
+    Controller.bindEvents('#dark_light_switch', {
+        change: e => {
+            let theme_value = e.target.value;
+            Controller.setTheme(theme_value);
+        }
+    });
+
+    MBUI.EVENTS.onThemeChanged(function(data) {
+        console.log(data.THEME);
+    });
+&lt;\script&gt;
+</pre>
+                    </code>
+                </div>
+            </div>
+            <div class="content-area">
+                <div class="text-describe">Tooltip</div>
+                <div class="text-describe-content">
+                    <span class="tooltip-content" data-title="Đây là đoạn tooltip">Giữ chuột vào đoạn text này để kích hoạt tooltip</span>
+                </div>
+                <div class="text-describe-content text-code">
+                    <code>
+                        <pre>
+&lt;!-- Lưu ý: Chỉ gọi 1 lần renderAutoTooltip khi class name giống nhau --&gt;
+
+&lt;span class="tooltip-content" data-title="Đây là đoạn tooltip"&gt;
+    Giữ chuột vào đây để kích hoạt tooltip
+&lt;/span&gt;
+
+&lt;script&gt;
+    MBUI.renderAutoTooltip('tooltip-content');
+&lt;\script&gt;
+</pre>
+                    </code>
+                </div>
+            </div>
+            <div class="content-area">
+                <div class="text-describe">Hộp thoại thông báo</div>
+                <div class="text-describe-content">Thông tin:
+                    <button id="btn_messages_notification">Nhấn vào đây</button>
+                </div>
+                <div class="text-describe-content text-code">
+                    <code>
+                        <pre>
+&lt;button id="btn_messages_notification&gt;"Nhấn vào đây&lt;/button&gt;
+
+&lt;script&gt;
+    // Message - NOTIFICATION
+    Controller.bindEvents('#btn_messages_notification', {
+        click: e => {
+            Message.showDialog({
+                type: Message.type.NOTIFICATION, 
+                title: 'Thông báo!', 
+                contentText: "Đây là nội dung của hộp thoại thông báo", 
+                events: {
+                    confirmed: function() {
+                        console.log('closed');
+                    }
+                }
+            });
+        }
+    });
+&lt;\script&gt;
+</pre>
+                    </code>
+                </div>
+                <div class="text-describe-content">Câu hỏi:
+                    <button id="btn_messages_question">Nhấn vào đây</button>
+                </div>
+                <div class="text-describe-content text-code">
+                    <code>
+                        <pre>
+&lt;button id=btn_messages_question"&gt;"Nhấn vào đây&lt;/button&gt;
+&lt;script&gt;
+    // Message - QUESTION
+    Controller.bindEvents('#btn_messages_question', {
+        click: e => {
+            Message.showDialog({
+                type: Message.type.QUESTION, 
+                title: 'Thông báo!', 
+                contentText: "Vui lòng chọn 'Huỷ' hoặc 'OK'", events: {
+                    confirming: function(obj) {
+                        // không cho phép đóng hộp thoại
+                        // obj.cancel = true;
+
+                        // buộc đóng hộp thoại
+                        // obj.close();
+                        console.log(obj);
+                    },
+                    confirmed: function(value) {
+                        console.log(value);
+                    }
+                }
+            });
+        }
+    });
+&lt;\script&gt;
+</pre>
+                    </code>
+                </div>
+            </div>
+        </div>
+        <div class="right-content"></div>
+    </div>
+</body>
+</html>

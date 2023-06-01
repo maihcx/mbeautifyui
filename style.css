@@ -1,0 +1,94 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+:root, .light-theme {
+    --exp-main-content-background-color: #ffffff;
+    --exp-main-content-area-color: #dddddd;
+    --exp-text-color: #000000;
+    --exp-code-background-color: #cecece;
+    --exp-code-text-color: #303030;
+}
+.dark-theme {
+    --exp-main-content-background-color: #000000;
+    --exp-main-content-area-color: #222222;
+    --exp-text-color: #d3d3d3;
+    --exp-code-background-color: #363636;
+    --exp-code-text-color: #cecece;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    color: var(--exp-text-color);
+}
+.main-content {
+    background-color: var(--exp-main-content-background-color);
+}
+.main-content, .content-area {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    justify-content: space-around;
+}
+.left-content, .center-content, .right-content {
+    display: flex;
+}
+.content-area, .center-content {
+    flex-direction: column;
+}
+.content-area {
+    padding: 10px;
+    padding-bottom: 37px;
+    border-radius: 8px;
+    background-color: var(--exp-main-content-area-color);
+}
+.center-content {
+    width: 800px;
+    gap: 15px;
+}
+.center-frame {
+    align-items: center;
+    padding: 10px;
+}
+.header-text {
+    font-weight: 900;
+    font-size: 40px;
+}
+.header-text-describe {
+    font-weight: 400;
+    font-size: 20px;
+}
+.text-describe {
+    padding: 10px;
+    font-weight: 900;
+    font-size: 25px;
+    position: sticky;
+    top: 0;
+    border-radius: 5px;
+}
+.text-describe, .text-describe-content {
+    margin: 0 30px;
+}
+.text-code {
+    border-radius: 8px;
+    padding: 25px 30px;
+    font-size: 16px;
+    background-color: var(--exp-code-background-color);
+    color: var(--exp-code-text-color);
+}
+
+/* if backdrop support: very transparent and blurred */
+@supports ((-webkit-backdrop-filter: blur(5px)) or (backdrop-filter: blur(5px))) {
+    .text-describe {
+        -webkit-backdrop-filter: var(--m-system-blur-filter);
+        backdrop-filter: var(--m-system-blur-filter);
+    }
+}

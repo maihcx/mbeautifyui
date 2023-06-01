@@ -148,7 +148,7 @@
 
                 if ($this.EVENTS.SYSTEM_THEME_CHANGED != null){
                     $this.EVENTS.SYSTEM_THEME_CHANGED.forEach(element => {
-                        element({prototype: {THEME: theme_str}});
+                        element({THEME: theme_str});
                     });
                 }
             }, getPathOfEvent(event){
@@ -508,7 +508,15 @@
         };
 
         $this.EVENTS = {
-            SYSTEM_THEME_CHANGED: null
+            SYSTEM_THEME_CHANGED: null,
+            onThemeChanged: function(callback){
+                if ($this.EVENTS.SYSTEM_THEME_CHANGED == null){
+                    $this.EVENTS.SYSTEM_THEME_CHANGED = [];
+                }
+                $this.EVENTS.SYSTEM_THEME_CHANGED.push(callback);
+            }, offThemeChanged: function(){
+                $this.EVENTS.SYSTEM_THEME_CHANGED = null;
+            }
         };
 
         $this.MBEAUTIFYUI = {
@@ -527,7 +535,7 @@
 
                 if ($this.EVENTS.SYSTEM_THEME_CHANGED != null){
                     $this.EVENTS.SYSTEM_THEME_CHANGED.forEach(element => {
-                        element({prototype: {THEME: "AUTO", SYSTEM_THEME: newColorScheme}});
+                        element({THEME: "AUTO", SYSTEM_THEME: newColorScheme});
                     });
                 }
             }
@@ -547,7 +555,7 @@
             if (m_is_mobile){
                 return false;
             }
-            var flag_bind = false;
+            let flag_bind = false;
             if (!$this.FORM_DATA.tooltip_initialize){
                 $this.FORM_DATA.tooltip_initialize = {};
                 flag_bind = true;
@@ -654,7 +662,7 @@
                     TOOLTIP_PANEL.classList.add('m-no-display');
                 };
 
-                $this.Controller.bindEvents(document.body, {mousemove: function(event) {
+                $this.Controller.bindEvents(window, {mousemove: function(event) {
                     const EVENT_PATH = $this.Controller.getPathOfEvent(event);
                     var flag_run = false,
                         item_start = null,
@@ -674,7 +682,7 @@
                             return true;
                         }
                     });
-
+                    
                     if (flag_run){
                         if (elementInsert != item_start){
                             fix_conflick = false;

@@ -1,8 +1,7 @@
 // a product of maihcx @maiphp
 ! function(_plugin, e) {
     "object" == typeof exports && "undefined" != typeof module ? e(exports) : "function" == typeof define && define.amd ? define(["exports"], e) : e((_plugin = "undefined" != typeof globalThis ? globalThis : _plugin || self).window = _plugin.window || {})
-}
-(this, (function(_plugin) {
+}(this, (function(_plugin) {
     "use strict";
 
     function MBeautifyUI(option){
@@ -555,13 +554,8 @@
             }
         };
         
-        var _CONFIG = $this.Controller.jsExtend($this.CONFIG, option),
-            _DEF_UI = $this.DEF_UI
-        ;
-        if (document.body.dataset[_CONFIG.UI_KEY] == undefined || document.body.dataset[_CONFIG.UI_KEY] == null) {
-            document.body.dataset[_CONFIG.UI_KEY] = true;
-            document.body.appendChild(_DEF_UI.renderNode(_CONFIG.ID_KEY))
-        }
+        var _CONFIG = $this.Controller.jsExtend($this.CONFIG, option);
+        
         const m_is_mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         $this.renderAutoTooltip = function(apply_class, callback = null){
@@ -573,7 +567,7 @@
             let flag_bind = tooltip_storage.is_intitialize;
 
             tooltip_storage.setCallback(apply_class, callback);
-            if (!flag_bind){
+            if (!flag_bind && document.readyState == 'complete'){
                 let tooltip_time = null, e_event = null, e_event_callback = {innerItem: null, is_ShowTooltip: false};
                 const TOOLTIP_PANEL = document.getElementsByClassName('tooltip-layout')[0],
                 moveRF = function(e){
@@ -648,28 +642,28 @@
                     }
                 }, fnc_tooltipStop = function(event){
                     if (tooltip_storage.is_show) {
-                        if (tooltip_time != null){
-                            clearTimeout(tooltip_time);
-                            if (tooltip_storage.current_element != null){
-                                $this.Controller.unbindEvents(tooltip_storage.current_element, {mousemove: moveRF});
-                                e_event_callback.is_ShowTooltip = false;
-                                if (tooltip_storage.current_callback != null){
-                                    tooltip_storage.current_callback(e_event_callback);
+                        setTimeout(() => {
+                            if (tooltip_time != null){
+                                clearTimeout(tooltip_time);
+                                if (tooltip_storage.current_element != null){
+                                    $this.Controller.unbindEvents(tooltip_storage.current_element, {mousemove: moveRF});
+                                    e_event_callback.is_ShowTooltip = false;
+                                    if (tooltip_storage.current_callback != null){
+                                        tooltip_storage.current_callback(e_event_callback);
+                                    }
+                                    e_event_callback.innerItem = null;
+                                    tooltip_storage.current_element = null;
                                 }
-                                e_event_callback.innerItem = null;
-                                tooltip_storage.current_element = null;
                             }
-                        }
-                        $this.Controller.unbindEvents(document, {mousemove: my_load_event});
-
-                        fnc_closeTooltip();
-
-                        $this.Controller.bindEvents(TOOLTIP_PANEL, {
-                            transitionend: fnc_closeTooltip}
-                        );
+                            $this.Controller.unbindEvents(document, {mousemove: my_load_event});
     
-                        TOOLTIP_PANEL.classList.remove('view');
-                        tooltip_storage.is_show = false;
+                            $this.Controller.bindEvents(TOOLTIP_PANEL, {
+                                transitionend: fnc_closeTooltip}
+                            );
+        
+                            tooltip_storage.is_show = false;
+                            TOOLTIP_PANEL.classList.remove('view');
+                        }, 20);
                     }
                 }, fnc_closeTooltip = function () {
                     $this.Controller.unbindEvents(TOOLTIP_PANEL, {
@@ -715,16 +709,12 @@
     
         $this.Message = {
             showToastNotification: async function(msg, time = 5000) {
-                const TOAST_PANEL = document.createElement('div'),
-                      TOAST_CONTENT = document.createElement('span'),
+                const TOAST_PANEL = $this.Controller.nodeCreator({node: 'div', classList: ['m-toast', 'global-blur-background']}),
+                      TOAST_CONTENT = $this.Controller.nodeCreator({node: 'span', classList: 'm-toast-content', textContent: msg}),
                       TOAST_AREA = document.querySelector(`#${$this.CONFIG.ID_KEY} > .m-toast-area`)
                 ;
                 TOAST_AREA.classList.remove('m-no-display');
 
-                TOAST_CONTENT.classList.add('m-toast-content');
-                TOAST_CONTENT.textContent = msg;
-
-                TOAST_PANEL.classList.add('m-toast', 'global-blur-background');
                 TOAST_PANEL.appendChild(TOAST_CONTENT);
 
                 const SHOWED_HANDLE = function() {
@@ -882,7 +872,7 @@
                         }
                     }
                 }
-                const headerCreated = $this.Message.protected_HEADER_CREATOR(HEADER_CONFIG);
+                const headerCreated = $this.Message.DIALOG_HEADER_CREATOR(HEADER_CONFIG);
                 MAIN_POPUP_CONTENT.appendChild(headerCreated.element);
                 box_data.header = headerCreated;
 
@@ -911,7 +901,7 @@
                                     }, ...input.events}
                                 }
                                 const PARENT_INPUT_NONE_OUTLINE = $this.Controller.nodeCreator({node: 'div', classList: 'm-none_outline-box'}), 
-                                      INPUT_ELEMENT = $this.Message.protected_INPUT_CREATOR(INPUT_CONFIG)
+                                      INPUT_ELEMENT = $this.Message.DIALOG_INPUT_CREATOR(INPUT_CONFIG)
                                 ;
 
                                 PARENT_INPUT_NONE_OUTLINE.appendChild(INPUT_ELEMENT)
@@ -940,7 +930,7 @@
                                     }
                                 }, ...input.events}
                             }
-                            const INPUT_ELEMENT = $this.Message.protected_INPUT_CREATOR(INPUT_CONFIG);
+                            const INPUT_ELEMENT = $this.Message.DIALOG_INPUT_CREATOR(INPUT_CONFIG);
                             PARENT_INPUT_NONE_OUTLINE.appendChild(INPUT_ELEMENT)
                             input_elements.push(INPUT_ELEMENT.querySelector('input, textarea'));
                         });
@@ -959,7 +949,7 @@
                             }}
                         }
                         const PARENT_INPUT_NONE_OUTLINE = $this.Controller.nodeCreator({node: 'div', classList: 'm-none_outline-box'}),
-                              INPUT_ELEMENT = $this.Message.protected_INPUT_CREATOR(INPUT_CONFIG)
+                              INPUT_ELEMENT = $this.Message.DIALOG_INPUT_CREATOR(INPUT_CONFIG)
                         ;
 
                         PARENT_INPUT_NONE_OUTLINE.appendChild(INPUT_ELEMENT);
@@ -1025,7 +1015,7 @@
                 }
 
                 // footer render
-                const footerCreated = $this.Message.protected_FOOTER_CREATOR(footer_config);
+                const footerCreated = $this.Message.DIALOG_FOOTER_CREATOR(footer_config);
                 MAIN_POPUP_CONTENT.appendChild(footerCreated.element);
                 box_data.footer = footerCreated;
 
@@ -1052,7 +1042,7 @@
                 });
                 $this.FORM_DATA.messages_data[INDEX_DATA] = box_data;
                 object.events && object.events.ready && object.events.ready(box_data);
-            }, protected_HEADER_CREATOR: function(object) {
+            }, DIALOG_HEADER_CREATOR: function(object) {
                 const HEAD_PANEL = $this.Controller.nodeCreator({node: 'div', classList: 'header-controls'}),
                       HEAD_TITLE = $this.Controller.nodeCreator({node: 'span', classList: 'popup-title', innerHTML: object.title}),
                       CLOSE_BUTTON = document.createElement('button')
@@ -1075,7 +1065,7 @@
                     HEAD_PANEL.appendChild(CLOSE_BUTTON);
                 }
                 return {element: HEAD_PANEL, buttons: buttons_created};
-            }, protected_INPUT_CREATOR: function(object) {
+            }, DIALOG_INPUT_CREATOR: function(object) {
                 const INPUT_PANEL = $this.Controller.nodeCreator({node: 'div', classList: 'm-outline-box'}),
                       INPUT_BOX = $this.Controller.nodeCreator({node: 'div', classList: 'content-input-box'}),
                       INPUT_ELEMENT = $this.Controller.nodeCreator({node: object.type == 'textarea' ? 'textarea' : 'input', classList: 'input-text', id: object.id, value: object.value ?? '', readOnly: object.readOnly ?? false})
@@ -1104,7 +1094,7 @@
                 INPUT_PANEL.appendChild(INPUT_BOX);
 
                 return INPUT_PANEL;
-            }, protected_FOOTER_CREATOR: function(object) {
+            }, DIALOG_FOOTER_CREATOR: function(object) {
                 const FOOTER_PANEL = $this.Controller.nodeCreator({node: 'div', classList: 'footer-controls'});
                 let buttonElements = [];
 
@@ -1328,7 +1318,7 @@
 
                         if (insideRender.visible){
                             style_injection_text += $this.ContextMenu.itemStyleInjectorText({style: insideRender.style, data: {name: insideRender.name}});
-                            CONTEXT_INJECTION_ELEMENT.appendChild($this.ContextMenu.itemHtmlInjectorElement({name: insideRender.name, text: insideRender.text}));
+                            CONTEXT_INJECTION_ELEMENT.appendChild($this.ContextMenu.itemInjectorElement({name: insideRender.name, text: insideRender.text}));
                         }
                     }
 
@@ -1381,7 +1371,7 @@
                         }
                     });
                 }
-            }, itemHtmlInjectorElement: function(obj){
+            }, itemInjectorElement: function(obj){
                 var content_element = $this.Controller.nodeCreator({node: 'div', classList: ['context-item', 'global-border-radius-4px', 'no-selector'], id: obj.name}),
                     child_content_element = $this.Controller.nodeCreator({node: 'div', classList: 'line-context-item-containt', textContent: obj.text})
                 ;
@@ -1471,19 +1461,10 @@
                 const ITEM_DATA = $this.FORM_DATA.form_information
                 ;
                 
-                var file_infor = document.createElement('div'),
-                    file_infor_head = document.createElement('div'),
-                    file_infor_body = document.createElement('div')
+                var file_infor = $this.Controller.nodeCreator({node: 'div', id: 'file_infor', classList: ['file-infor', 'global-blur-background', 'global-border-radius-line', 'global-border-radius-8px']}),
+                    file_infor_head = $this.Controller.nodeCreator({node: 'div', id: 'file_infor_head', classList: ['file-infor-head', 'prevent-mouse-event']}),
+                    file_infor_body = $this.Controller.nodeCreator({node: 'div', id: 'file_infor_body', classList: 'file-infor-body'})
                 ;
-
-                file_infor.id = 'file_infor';
-                file_infor.classList.add('file-infor', 'global-blur-background', 'global-border-radius-line', 'global-border-radius-8px');
-
-                file_infor_head.id = 'file_infor_head';
-                file_infor_head.classList.add('file-infor-head', 'prevent-mouse-event');
-
-                file_infor_body.id = 'file_infor_body';
-                file_infor_body.classList.add('file-infor-body');
 
                 for (const key in ITEM_DATA) {
                     if (key == 'image'){
@@ -1501,26 +1482,12 @@
 
                 document.getElementById('file_infor_layout').appendChild(file_infor);
             }, htmlInjectionImage: function(data = {}) {
-                var image_infor = document.createElement('img');
-                image_infor.id = 'file_infor_image';
-                image_infor.classList.add('file-infor-image');
-                image_infor.src = data.src;
-                return image_infor;
+                return $this.Controller.nodeCreator({node: 'img', id: file_infor_image, classList: 'file-infor-image', src: data.src});
             }, htmlInjectionDivElement: function(data = {}) {
-                var div_infor = document.createElement('div'),
-                    file_infor_title = document.createElement('span'),
-                    file_infor_content = document.createElement('span')
-                ;
-                div_infor.classList.add('file-infor-content');
-
-                file_infor_title.classList.add('file-infor-title');
-                file_infor_title.textContent = data.title;
-
-                file_infor_content.classList.add('file-infor-content');
-                file_infor_content.textContent = data.content;
+                let div_infor = $this.Controller.nodeCreator({node: 'div', classList: 'file-infor-content'});
                 
-                div_infor.appendChild(file_infor_title);
-                div_infor.appendChild(file_infor_content);
+                div_infor.append($this.Controller.nodeCreator({node: 'span', classList: 'file-infor-title', textContent: data.title}), 
+                    $this.Controller.nodeCreator({node: 'span', classList: 'file-infor-content', textContent: data.content}));
 
                 return div_infor;
             }, eraseRender: function(event) {
@@ -2086,12 +2053,30 @@
             }
             return ACTIONS;
         }
-
-        if (!m_is_mobile){
-            $this.renderAutoTooltip('m-tooltip-box');
-        }
         
-        $this.SYSTEM.LOW_PROFILE_MODE = _CONFIG.LOW_PROFILE_MODE;
+        $this.INIT = function() {
+            if (document.body.dataset[_CONFIG.UI_KEY] == undefined || document.body.dataset[_CONFIG.UI_KEY] == null) {
+                document.body.dataset[_CONFIG.UI_KEY] = true;
+                document.body.appendChild($this.DEF_UI.renderNode(_CONFIG.ID_KEY))
+            }
+            $this.SYSTEM.LOW_PROFILE_MODE = _CONFIG.LOW_PROFILE_MODE;
+            if (!m_is_mobile){
+                $this.renderAutoTooltip('m-tooltip-box');
+            }
+        }
+
+        if (document.readyState == 'complete') {
+            $this.INIT();
+        }
+        else {
+            $this.Controller.bindEvents(window, {load: function() {
+                $this.INIT();
+                $this.FORM_DATA.tooltip_storage.is_intitialize = false;
+                for (let classet_tooltip in $this.FORM_DATA.tooltip_storage.getCallback()) {
+                    $this.renderAutoTooltip(classet_tooltip);
+                }
+            }});
+        }
         return $this;
     }
 

@@ -1,11 +1,7 @@
-var MBUI = null;
-var Controller = null;
-var Message = null;
+var MBUI = MBeautifyUI();
+var Controller = MBUI.Controller;
+var Message = MBUI.Message;
 window.onload = function() {
-    MBUI = MBeautifyUI();
-    Controller = MBUI.Controller;
-    Message = MBUI.Message;
-
     // tooltip
     MBUI.renderAutoTooltip('tooltip-content');
 

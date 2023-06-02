@@ -261,4 +261,7 @@ v1.4.1:
     - Lệnh khởi tạo sẽ kiểm tra trạng thái document.readyState đã 'complete' hay chưa, nếu chưa thì gán vào window.onload để đợi trang sẵn sàng
     - Cho phép thực hiện một số lệnh trước khi trang sẵn sàng.
     - Sửa lỗi renderAutoTooltip không có hiệu ứng mờ dần khi đóng.
+v1.4.1.1: hotfix
+    - Sửa lỗi tooltip bị nhấp nháy.
+    - Sửa lỗi FormInformation không khởi tạo được.
 == == == ==

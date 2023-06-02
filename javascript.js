@@ -6,6 +6,7 @@ window.onload = function() {
     MBUI.renderAutoTooltip('tooltip-content');
 
     // theme
+    Controller.setTheme(0);
     Controller.bindEvents('#dark_light_switch', {
         change: e => {
             let theme_value = e.target.value;

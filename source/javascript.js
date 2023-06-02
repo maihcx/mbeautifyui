@@ -1485,7 +1485,7 @@
 
                 document.getElementById('file_infor_layout').appendChild(file_infor);
             }, htmlInjectionImage: function(data = {}) {
-                return $this.Controller.nodeCreator({node: 'img', id: file_infor_image, classList: 'file-infor-image', src: data.src});
+                return $this.Controller.nodeCreator({node: 'img', id: 'file_infor_image', classList: 'file-infor-image', src: data.src});
             }, htmlInjectionDivElement: function(data = {}) {
                 let div_infor = $this.Controller.nodeCreator({node: 'div', classList: 'file-infor-content'});
                 

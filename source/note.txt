@@ -1,0 +1,264 @@
+Using:
+<script>
+    // init
+    global_mbeautyfyui = MBeautifyUI({IMG_SOURCE: '<!--{$path_url}-->/images'});
+    // loading show - hide
+    global_mbeautyfyui.LoadingPanel.setParentID('panel_right'); // set parent
+    global_mbeautyfyui.LoadingPanel.show(); // show loading
+    global_mbeautyfyui.LoadingPanel.hide(); // hide loading
+    // warn dialog
+    global_mbeautyfyui.showDialogQuestion(function(value){
+        // value is return your seleted in dialog question
+    }, 'content text', 'header text');
+    global_mbeautyfyui.showDialogNotification(function(){
+        // callback when complete
+    }, 'content text', 'header text');
+    global_mbeautyfyui.showDialogInput(function(result){
+        // result is a value user input
+    }, 'content text', 'header text');
+    global_mbeautyfyui.showDialogQuestionCustome(workingUpload, {
+        msg: 'content text',
+        btn_1: {content: "text", title: "text"},
+        btn_2: {content: "text", title: "text"},
+        autoChoise: null //using value != null to skip question,
+        inputChk1: {content: "Không hỏi lại", name: "noASK", id: "noASK"}
+    });
+    // message text // time: milisecond
+    Message.showToastNotification('Message', 10000);
+    // show tooltip when mouse hover
+    global_mbeautyfyui.renderTooltip('tootip-box');
+    global_mbeautyfyui.renderAutoTooltip('tootip-box');
+    // example html
+    <div class="setting-controlsbox tootip-box">
+        <input type="checkbox" name="interface_directives" data-mode="fullscreenmode" id="directives_fullscreenmode" value="0">
+        <label for="directives_fullscreenmode">Toàn màn hình</label>
+        <span class="tootip-content">Các tính năng thử nghiệm có thể<br>không hoạt động ổn định:<br>-Hiển thị toàn màn hình-</span>
+    </div>
+    // == //
+    // context menu
+    global_mbeautyfyui.ContextMenu.set('MENU_CONTEXT', {deffData: {
+            any1 // can set anything name: 'some value1', any1: 'some value2', autohide: true
+        }, itemData: {
+            item_name // can set anything: {
+                index: 0 // set visible or overide the same index, text: 'text', visible: true // boolean true or false ,
+                style: {
+                    after: {
+                        'background-image': 'image url'
+                    }
+                }, event: {
+                    onclick: function(e){
+                        // do some thing
+                        // global_mbeautyfyui.ContextMenu.get('MENU_CONTEXT').any1; get value from deffData.any1
+                    }
+                }
+            }, ...
+        }
+    );
+    global_mbeautyfyui.ContextMenu.show('MENU_CONTEXT' // can set any thing, event); // show menu context
+    // theme api //
+    global_mbeautyfyui.Controller.setTheme(global_mbeautyfyui.THEME['AUTO']); // AUTO - LIGHT - DARK
+    global_mbeautyfyui.Controller.onThemeChange(function(event){
+        // any code here
+    }); // Auto detect theme changed
+    global_mbeautyfyui.Controller.offThemeChanged(); // prevent all from (onThemeChange)
+    // == //
+    // animate
+    global_mbeautyfyui.animate(ELEMENT).hide([animationtime]);
+    global_mbeautyfyui.animate(ELEMENT).show([animationtime]);
+    global_mbeautyfyui.animate(ELEMENT).collapse([animationtime]);
+    global_mbeautyfyui.animate(ELEMENT).expand([animationtime]);
+    global_mbeautyfyui.animate(ELEMENT).scrollTop(location);
+    // == //
+</script>
+
+change logs
+v0.0.0.beta1 => Khởi tạo thư viện
+    - Sử dụng class cho thư viện
+    - Đã thêm các điều khiển chức năng cơ bản
+v0.0.0.beta2 => 
+    - Chuyển đổi sang cấu trúc Jquery plugin
+    - Nâng cấp hiệu ứng làm giảm việc sử dụng nhiều tài nguyên hệ thống
+    - Thêm vào một số UI mới
+    - Sửa lỗi menu context
+    - Sửa lỗi tự động chọn không bao giờ được thực thi trong: showDialogQuestionCustome();
+v0.0.1 => Ổn định (Hợp nhất các phiên bản beta)
+    - Thư viện viết với nền Jquery
+    - Tăng tính ổn định của các chức năng
+    - Thêm hiển thị khung loading
+v0.0.2:
+    - Sửa đổi dữ liệu phản hồi của showDialogQuestionCustome()
+    - Sửa lỗi menu ngữ cảnh hiển thị ở vị trí không đúng
+v0.0.3:
+    - Sửa lỗi còn tồn tại ở các chức năng hiển thị popup
+    - Hợp nhất màu sắc thành các biến cho đồng nhất hơn về ngôn ngữ thiết kế
+    - Thêm một số API thay đổi cấu hình giao diện (AUTO, LIGHT, DARK)
+v0.0.4:
+    - Thêm trình bắt lỗi ở thành phần sao chép ảnh vào clipboard
+    - Khắc phục một số trình duyệt không thể sao chép được ảnh
+    - Thay đổi khoảng cách nội dung của các thông báo popup
+    - Thay đổi màu sắc chữ ở chế độ nền tối trên toàn bộ thành phần
+v0.0.5:
+    - Tối ưu phần hiển thị của tooltip
+    - Tối ưu phần hiển thị của context menu
+    - Độ rộng tối đa của tooltip được giới hạn 80% kích thước cửa sổ
+v0.0.6:
+    - Tắt chỉ định kích thước tối thiểu của tooltip
+    - Chỉ kích hoạt hiệu ứng làm mờ cho máy tính (sự cố hiệu suất trên các thiết bị di động)
+    - Hiệu ứng mở menu ngữ cảnh mới
+    - Đóng menu ngữ cảnh khác khi mở menu mới
+    - Thêm phương thức đóng các menu ngữ cảnh khác loại trừ hideOrder(context_name);
+    - Một số cải tiến khác
+v0.0.7:
+    - Thêm phương thức global_mbeautyfyui.Controller.isNullOrEmpty(any) để kiểm tra giá trị của biến có hợp lệ
+    - Loại bỏ thành phần phụ thuộc với ứng dụng vì thư viện được tách ra từ phần mềm upfile
+v0.0.8:
+    - Thêm phương thức nhận diện cho trình xem tooltip
+v0.0.9:
+    - Thêm hàm khởi tạo tooltip khác renderAutoTooltip(); để khắc phục nhược điểm gọi lại nhiều lần ở hàm renderTooltip();
+    - Phương thức renderTooltip(); có thể sẽ bị loại bỏ ở phiên bản tiếp theo
+    - Loại bỏ sự phụ thuộc với thư viện Jquery (40%)
+v0.1.0
+    - Chuyển đổi phương thức $.extend của Jquery sang thuần JavaScript (vấn đề lớn ở quá trình chuyển đổi)
+    - Đã loại bỏ hoàn toàn phương thức renderTooltip()
+    - Loại bỏ sự phụ thuộc với thư viện Jquery (45%)
+v1.0.0:
+    - Loại bỏ tất cả phụ thuộc với Jquery
+    - Đã thêm phương thức global_mbeautyfyui.Controller.bindEventsToQueryElements(); để gán các sự kiện chỉ định được bảo mật (thay thế Jquery)
+    - Đã thêm phương thức global_mbeautyfyui.Controller.unbindEventsToQueryElements(); để huỷ gán các sự kiện chỉ định (thay thế Jquery)
+    - Đã thêm phương thức global_mbeautyfyui.Controller.unbindAllEventsToQueryElements(); để huỷ gán các sự kiện của các phần tử con (thay thế Jquery)
+    - Đã thêm phương thức global_mbeautyfyui.Controller.jsExtend(); để hợp nhất sâu các đối tượng Objects (thay thế Jquery)
+    - Đã thêm phương thức global_mbeautyfyui.Controller.getPathOfEvent(event); để nhận các đối tượng được chỉ định bởi sự kiện
+    - Đã thêm phương thức global_mbeautyfyui.Controller.setStyleToElement(); để thiết lập định kiểu cho một hay nhiều đối tượng cùng lúc
+    - Chuyển đổi một số phương thức truy vấn và vẽ đồ hoạ sang HTMLElement thay vì string như trước
+    - Hiệu suất thư viện bị giảm vì một số hàm còn chưa được tối ưu hoá
+    - Đã khắc phục các vấn đề về bảo mật
+    - Đã thêm lớp LoadingPanel để hiển thị màn hình đang tải
+    - Đã thêm lớp phương thức global_mbeautyfyui.FormInformation để hiển thị thông tin thêm
+v1.0.1:
+    - Khắc phục vấn đề hiệu suất cuộn
+    - Tối ưu hoá các hàm liên quan đến việc khởi tạo nền
+    - Khắc phục các vấn đề khác phát sinh khi chuyển đổi từ Jquery sang JavaScript
+v1.0.2:
+    - Khắc phục vấn đề của showDialogQuestionCustome()
+    - Sửa một số lỗi tồn tại từ v:1.0.0
+    - Sửa lỗi chính tả ở tên hàm
+v1.0.3:
+    - Khắc phục các vấn đề của các hộp thông báo showDialog...() bị lỗi khi gọi lồng nhau
+v1.0.4:
+    - Hợp nhất các hộp thoại thông báo thành Message.showDialog...()
+    - Thêm phương thức thông báo bên góc màn hình vào lớp Message: Message.showToastNotification('Nội dung', [10000]);
+    - Thêm lớp animate để thay thế cho jquery
+    - Khắc phục lỗi LoadingPanel không kết thúc hoàn toàn khi mở và đóng quá nhanh
+    - Tối ưu tốc độ khung hình (tooltip không tắt hoàn toàn khi không sử dụng)
+    - Tối ưu hiệu suất (đã tốt hơn khi dùng với Jquery)
+v1.0.5:
+    - Cho phép kích hoạt chế độ cấu hình thấp để tắt hiệu ứng làm mờ chủ động hơn: (global_mbeautyfyui.SYSTEM.LOW_PROFILE_MODE = true)
+    - Thêm tính năng kiểm tra trạng thái các hộp thông báo showDialog...() có đang hiển thị hay không (global_mbeautyfyui.Message.isShowing)
+v1.0.6:
+    - Thêm tính năng kiểm tra trạng thái hộp thông báo global_mbeautyfyui.FormInformation có đang hiển thị hay không (global_mbeautyfyui.FormInformation.isShowing)
+v1.0.7:
+    - Khắc phục bindEventsToQueryElements bị lỗi ở một số trường hợp.
+v1.0.8:
+    - Khắc phục rò rỉ bộ nhớ khi đóng context menu.
+    - Khắc phục unbindEventsToQueryElements bị lỗi ở một số trường hợp.
+v1.1.0:
+    - Khắc phục spam event ở phương thức renderAutoTooltip().
+    - Quản lý các sự kiện ở phương thức bindEventsToQueryElements() tốt hơn để tránh rò rỉ bộ nhớ.
+    - Đã có thể loại bỏ sự kiện ẩn danh khỏi đối tượng ở phương thức unbindEventsToQueryElements().
+    - Phương thức setTheme() đã thay đổi kiểu bắt sự kiện theo quy định chung.
+    - Các phương thức trong lớp Message đã thay đổi kiểu bắt sự kiện theo quy định chung.
+    - Các phương thức trong lớp ContextMenu đã thay đổi kiểu bắt sự kiện theo quy định chung.
+    - Các đối tượng menu con của ContextMenu đã hỗ trợ xem lại đối tượng mà nó được gắn vào.
+    - Huỷ các sự kiện được gắn vào đối tượng con của ContextMenu để tránh rò rỉ bộ nhớ.
+v1.1.1:
+    - Thay đổi tên phương thức: bindEventsToQueryElements() -> bindEvents()
+    - Thay đổi tên phương thức: unbindEventsToQueryElements() -> unbindEvents()
+    - Thay đổi tên phương thức: unbindAllEventsToQueryElements() -> unbindAllEvents()
+v1.1.5:
+    - Đã thêm lớp eventStored trong global_mbeautyfyui.Controller dùng để lưu trữ các xử lý của sự kiện theo đối tượng cụ thể.
+    - Đã thêm các xử lý cơ bản trong global_mbeautyfyui.Controller.eventStored: getEventNames(), getEvent(), setEvent(), removeEvent().
+    - Phương thức bindEvents() được tối ưu hoá với lớp eventStored
+    - Phương thức unbindEvents() được tối ưu hoá với lớp eventStored
+    - Phương thức unbindAllEvents() được tối ưu hoá với lớp eventStored, khắc phục vấn đề tràn bộ nhớ vì không có liên kết với bindEvents().
+    - Khắc phục lỗi FormInformation biến mất sau khi hiển thị.
+    - Thay đổi tên phương thức: emulationActionToElement() -> eventTrigger()
+    - Thay đổi tên phương thức: explainFromQueryElements() -> getElementsByQuery()
+v1.1.6:
+    - Khắc phục vấn đề unbindEvents bị nhầm lẫn các sự kiện khác.
+v1.2.0:
+    - Đã thêm phương thức showDialog trong lớp Message, các phương thức lỗi thời: showDialogQuestion, showDialogInput, showDialogNotification, isShowing 
+    sẽ sớm bị loại bỏ và thay thế bởi phương thức mới vì không còn đáp ứng được hiệu suất với những lỗi còn tồn tại sẽ làm cho sự hoạt động không được tối ưu.
+    - showDialogQuestion, showDialogInput, showDialogNotification trong lớp Message sẽ không còn được vá lỗi nữa.
+    - Khắc phục lỗi tooltip sai vị trí khi đối tượng ngoài cùng cuộn đến vị trí khác.
+v1.2.1:
+    - Đã thêm phương thức getDialog() trong lớp Message dùng để nhận các cửa sổ popup đã được khởi tạo, thay thế cho isShowing.
+    - Đã thêm tự động gán loại popup là NOTIFICATION khi không phát hiện khai báo loại popup trong quá trình khởi tạo.
+    - Hợp nhất quá trình xử lý nội tuyến của phương thức showDialog().
+    - Thay đổi cấu trúc lệnh điều kiện của phương thức showDialog().
+    - Vá lỗi và thêm tính năng cho phương thức showDialog().
+v1.2.2:
+    - Cập nhật phương thức getDialog(targetDialog) sẽ trả về hộp thoại phía trước (backward) hoặc phía sau (forward) đối tượng dialog chỉ định.
+    - Khắc phục vấn đề sự kiện liên quan không được dừng lại khi gọi (event.cancel = true).
+v1.3.0:
+    - Đã thêm lớp effector hỗ trợ các hiệu ứng tốt hơn lớp animate, hỗ trợ xử lý đồng thời nhiều đối tượng và nhiều hiệu ứng / đối tượng, khắc phục các vấn đề mà lớp animate không thể sửa được.
+    - Lớp animate sẽ không còn được dùng nữa và đã được chuyển sang lớp effector, cũng sẽ bị loại bỏ trong thời gian tới.
+    - Cập nhật hiệu ứng cho phương thức showDialog(), nội dung hiển thị giờ đây sẽ có hiệu ứng thể hiện và đóng đẹp hơn.
+    - Khắc phục trang dừng hoạt động khi khởi tạo trong một số trường hợp.
+    - Tăng tốc một phần thời gian tải và khởi tạo thư viện.
+v1.3.1:
+    - Cập nhật cho showDialog(), giờ đây đã có thể thêm các nút tuỳ chỉnh, hỗ trợ thiết lập input trong loại QUESTION.
+    - Hỗ trợ đóng cửa sổ Dialog ở sự kiện comfirming.
+    - Sửa một số lỗi hiển thị với showDialog() có loại là QUESTION.
+v1.3.2:
+    - Hỗ trợ trường chỉ đọc (readonly) trong showDialog().
+    - Thêm kiểu nhập dữ liệu textarea trong showDialog().
+    - Cập nhật ContextMenu khắc phục một số lỗi tương thích giữa các trình duyệt và các thiết bị khác nhau.
+    - Đã khắc phục ContextMenu tự đóng lại khi vừa được mở trên các thiết bị di động.
+    - Cập nhật nền bóng mờ lớp phủ cho showDialog().
+    - Khắc phục lỗi của LoadingPanel không ẩn hoàn toàn khi thực thi hide() làm cho các thao tác không thể thực hiện được nữa, sử dụng phương thức hàng đợi theo thời gian phản hồi thay cho gán sự kiện trước đó. Lỗi phát sinh ở phiên bản v1.0.0
+    - Phiên cập nhật v1.3.5 sẽ loại bỏ các hàm không còn dùng nữa trong lớp Message.
+    - lớp FormInformation sẽ sớm được thay thế với phương thức tốt hơn trong tương lai.
+v1.3.3:
+    - Thay đổi hiệu ứng xếp chồng của menu ngữ cảnh, giờ đây sẽ làm việc với tốc độ cao hơn và chính xác hơn.
+    - Cập nhật Controller.XHRSendRequest để có thể gửi FormData.
+    - Thêm phương thức nodeCreator và nodeCloner trong lớp Controller, lớp này sử dụng để tạo ra các đối tượng HTML dễ dàng hơn với javascript.
+v1.3.4:
+    - Sửa lỗi tràn bộ nhớ khi đóng menu ngữ cảnh, nguyên nhân do không unbind event đúng cách.
+    - Cập nhật hiệu ứng mở ra và đóng lại của menu ngữ cảnh.
+    - Thêm đổ bóng cho menu ngữ cảnh.
+    - Thêm phương thức getContextMenu() trong lớp ContextMenu để hỗ trợ việc lấy các menu ngữ cảnh còn mở.
+v1.3.5:
+    - Tối ưu quá trình khởi tạo một số phương thức và làm sạch code với phương thức nodeCreator().
+    - Các phương thức showDialog cũ đã bị xoá bỏ.
+    - Thêm phương thức text2node() trong lớp Controller dùng để chuyển đổi các đối tượng text html sang node element.
+    - Đã khắc phục vấn đề trong quá trình khởi tạo sẽ gây ra lỗi không thể nhận diện các đối tượng đúng cách.
+    - Giảm thiểu kích thước của thư viện, khoảng 20% kích thước đã được tối ưu.
+v1.3.6:
+    - Cập nhật queueExcuteTasking(), loại bỏ thành phần tham số bị dư thừa.
+    - Cập nhật effector.showSwipe(), effector.hideSwipe() khắc phục lỗi không thực hiện đúng lệnh.
+v1.3.7:
+    - Đã thêm phương thức f_text2node() trong lớp Controller dùng để chuyển đổi các đối tượng text html sang node element đơn lẽ.
+    - Chỉnh sửa phương thức text2node() trong lớp Controller giờ đây có thể chuyển đổi các đối tượng text html sang nhiều node element.
+    - Đã thêm phương thức showSwipeWidth() trong lớp effector dùng để hiện đối tượng với logic dịch chuyển chiều rộng
+    - Đã thêm phương thức hideSwipeWidth() trong lớp effector dùng để ẩn đối tượng với logic dịch chuyển chiều rộng
+    - Cập nhật effector.expand() khắc phục lỗi thiếu tham số _opts gây ra dừng đột ngột.
+v1.3.8:
+    - Đã thêm phương thức queueExcuteStories() trong lớp Controller dùng để tập hợp và thực thi lệnh theo hàng chờ.
+    - Cập nhật toàn bộ phương thức trong lớp effector, gán các hiệu ứng vào hàng chờ để tránh việc chồng chéo các hiệu ứng, tính năng thực thi hiệu ứng trên nhiều đối tượng và nhiều đối tượng có cùng hiệu ứng đã bị loại bỏ vì phát sinh quá nhiều vấn đề.
+    - Hiệu suất của hiệu ứng có thể bị giảm ở một số thiết bị.
+    - Cập nhật và tối ưu hoá lớp hiệu ứng effector, zoomIn và zoomOut sử dụng thuật toán logic mới.
+v1.3.9:
+    - Các lớp phủ dưới nền và đối tượng trên nền sẽ được hiển thị ở thứ tự ưu tiên cao hơn, tránh bị đối tượng khác chiếm vị trí trên cùng.
+    - Cập nhật nodeCloner, nodeCreator sẽ trả về node thay vì any data.
+    - Thay đổi quá trình renderNode, hợp nhất appendChild để cho hiệu suất tốt hơn.
+    - Thêm lớp Controller sẽ thay thế Controller vì lỗi chính tả của lớp đó.
+    - Sửa lỗi zoomIn và zoomOut không kết thúc quá trình transform đúng cách, làm cho đối tượng sau khi kết thúc hiệu ứng không trả về nguyên trạng
+v1.4.0:
+    - Sửa lỗi renderAutoTooltip không tự đóng lại
+    - Sửa lỗi renderAutoTooltip xuất hiện sai vị trí khi không có khoảng trống để hiển thị
+v1.4.1:
+    - Hợp nhất các lệnh thực thi khởi tạo thành 1 lần khởi tạo duy nhất.
+    - Lệnh khởi tạo sẽ kiểm tra trạng thái document.readyState đã 'complete' hay chưa, nếu chưa thì gán vào window.onload để đợi trang sẵn sàng
+    - Cho phép thực hiện một số lệnh trước khi trang sẵn sàng.
+    - Sửa lỗi renderAutoTooltip không có hiệu ứng mờ dần khi đóng.
+== == == ==

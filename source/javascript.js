@@ -618,6 +618,7 @@
                     e_event = e;
                 }, fnc_tooltipStart = function(bind_key_run, itemShowTooltip) {
                     if (tooltip_storage.current_element != itemShowTooltip && !tooltip_storage.is_show){
+                        fnc_closeTooltip();
                         tooltip_storage.current_callback = tooltip_storage.getCallback(bind_key_run);
                         tooltip_storage.current_element = itemShowTooltip;
                         tooltip_storage.is_show = true;
@@ -670,7 +671,9 @@
                         transitionend: fnc_closeTooltip}
                     );
 
-                    TOOLTIP_PANEL.classList.add('m-no-display');
+                    if (tooltip_storage.is_show == false) {
+                        TOOLTIP_PANEL.classList.add('m-no-display');
+                    }
                 };
 
                 $this.Controller.bindEvents(window, {mousemove: function(event) {
@@ -680,8 +683,8 @@
                         bind_key_run = null
                     ;
 
-                    Object.keys(tooltip_storage.getCallback()).some(bind_key => {
-                        EVENT_PATH.some(element_path => {
+                    for (let bind_key in tooltip_storage.getCallback()) {
+                        EVENT_PATH.forEach(element_path => {
                             if (!$this.Controller.isNullOrEmpty(element_path.classList) && element_path.classList.contains(bind_key)){
                                 flag_run = true;
                                 item_start = element_path;
@@ -690,10 +693,10 @@
                             }
                         });
                         if (flag_run){
-                            return true;
+                            break;
                         }
-                    });
-                    
+                    }
+
                     if (flag_run){
                         if (tooltip_storage.current_element != item_start){
                             fnc_tooltipStop(event);

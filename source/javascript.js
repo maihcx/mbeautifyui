@@ -373,6 +373,7 @@
                 if (!$this.FORM_DATA.queue_stored[key]) $this.FORM_DATA.queue_stored[key] = [];
                 $this.FORM_DATA.queue_stored[key].push(task);
                 if (!$this.FORM_DATA.queue_stored[key].isStated) {
+                    $this.FORM_DATA.queue_stored.task_working = true;
                     $this.FORM_DATA.queue_stored[key].isStated = true;
 
                     let index = 0;
@@ -388,8 +389,14 @@
                         });
                         
                         index++;
+
+                        if (!$this.FORM_DATA.queue_stored.task_working) {
+                            $this.FORM_DATA.queue_stored.task_working = true;
+                            index = $this.FORM_DATA.queue_stored[key].length;
+                        }
                     }
                 }
+                return $this.FORM_DATA.queue_stored;
             }, nodeCreator(data) {
                 let element_creation = document.createElement(data.node);
                 return this.nodeCloner(element_creation, data, true);
@@ -511,7 +518,9 @@
             event_controlers: [],
             messages_data: [],
             is_menu_touch: false,
-            queue_stored: {}
+            queue_stored: {task_working: true, stop: function() {
+                $this.FORM_DATA.queue_stored.task_working = false;
+            }}
         };
 
         $this.THEME = {
@@ -1715,8 +1724,9 @@
         $this.effector = function(element) {
             const ELEMENTS = $this.Controller.getElementsByQuery(element);
             const ACTIONS = {
-                show: function(_opts) {
+                show: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    let queue_string = _opts.queue ?? 'show_eff';
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
     
@@ -1740,9 +1750,11 @@
                             resolve();
                             main_resolve();
                         }]);
-                    }, 'show_eff');
-                }, hide: function(_opts) {
+                    }, queue_string);
+                    return $this.FORM_DATA.queue_stored;
+                }, hide: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    let queue_string = _opts.queue ?? 'hide_eff';
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
     
@@ -1767,9 +1779,11 @@
                             resolve();
                             main_resolve();
                         }]);
-                    }, 'hide_eff');
-                }, showSwipe: function(_opts) {
+                    }, queue_string);
+                    return $this.FORM_DATA.queue_stored;
+                }, showSwipe: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    let queue_string = _opts.queue ?? 'show_sw_eff';
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME),
                             type = ((_opts && _opts.type) ? _opts.type : 'left'),
@@ -1805,8 +1819,9 @@
                             resolve();
                             main_resolve();
                         }]);
-                    }, 'show_sw_eff');
-                }, showSwipeWidth: function(_opts) {
+                    }, queue_string);
+                    return $this.FORM_DATA.queue_stored;
+                }, showSwipeWidth: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
@@ -1838,8 +1853,9 @@
                             main_resolve();
                         }]);
                     }, 'show_sw_w_eff');
-                }, hideSwipe: function(_opts) {
+                }, hideSwipe: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    let queue_string = _opts.queue ?? 'hide_sw_eff';
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME),
                             type = ((_opts && _opts.type) ? _opts.type : 'left'),
@@ -1875,9 +1891,11 @@
                             resolve();
                             main_resolve();
                         }]);
-                    }, 'hide_sw_eff');
-                }, hideSwipeWidth: function(_opts = null) {
+                    }, queue_string);
+                    return $this.FORM_DATA.queue_stored;
+                }, hideSwipeWidth: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    if (!_opts) _opts = {};
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
     
@@ -1898,8 +1916,9 @@
                             main_resolve();
                         }]);
                     }, 'hide_sw_w_eff');
-                }, zoomIn: function(_opts = null) {
+                }, zoomIn: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    if (!_opts) _opts = {};
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
     
@@ -1941,8 +1960,9 @@
                             main_resolve();
                         }]);
                     }, 'zoom_in_eff');
-                }, zoomOut: function(_opts = null) {
+                }, zoomOut: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    if (!_opts) _opts = {};
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
     
@@ -1984,7 +2004,7 @@
                             main_resolve();
                         }]);
                     }, 'zoom_out_eff');
-                }, collapse: function(_opts = null) {
+                }, collapse: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
@@ -2016,8 +2036,9 @@
                             main_resolve();
                         }]);
                     }, 'collapse_expand_eff');
-                }, expand: function(_opts = null) {
+                }, expand: function(_opts = {}) {
                     if (ELEMENTS.length == 0) return false;
+                    if (!_opts) _opts = {};
                     $this.Controller.queueExcuteStories(function(main_resolve) {
                         let animateTime = ((_opts && _opts.time) ? _opts.time : $this.CONFIG.ANIMATION_TIME);
                         

@@ -264,4 +264,8 @@ v1.4.1:
 v1.4.1.1: hotfix
     - Sửa lỗi tooltip bị nhấp nháy.
     - Sửa lỗi FormInformation không khởi tạo được.
+v1.4.2.Beta:
+    - Khắc phục các lỗi trong lớp effector, các trình thực thi hiệu ứng có thể bị lỗi khi không có tham số truyền vào.
+    - (beta)Thiết lập xử lý cho phép dừng nóng các hiệu ứng khi đang trong hàng đợi.
+    - (beta)Cho phép tuỳ chỉnh hàng chờ của một số hiệu ứng
 == == == ==
